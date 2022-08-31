@@ -130,13 +130,14 @@ def create_loyo_model(n_features):
     optimizer = optimizers.RMSprop(lr=0.02)
     
     # Compilation
-    model.compile(optimizer = optimizer, loss=root_mean_squared_error, metrics=[root_mean_squared_error])
+    model.compile(optimizer = optimizer, loss=root_mean_squared_error, metrics=[r2_keras])
 #    model.compile(optimizer = optimizer, loss=r2_keras_loss, metrics=[r2_keras])
+#    model.compile(optimizer = optimizer, loss=root_mean_squared_error, metrics=[r2_keras])
 
     
     return model
 
-def create_lsyso_model(n_features, final):
+def create_loyso_model(n_features, final):
     model = Sequential()
         
     # Input layer
@@ -224,7 +225,8 @@ def create_lsyso_model(n_features, final):
 #    optimizer = optimizers.rmsprop(lr=0.0008)
     
     # Compilation
-    model.compile(optimizer = optimizer, loss=root_mean_squared_error, metrics=[root_mean_squared_error])
+    model.compile(optimizer = optimizer, loss=root_mean_squared_error, metrics=[r2_keras])
+#    model.compile(optimizer = optimizer, loss=root_mean_squared_error, metrics=[root_mean_squared_error])
 #    model.compile(optimizer = optimizer, loss=r2_keras_loss, metrics=[r2_keras])
 
     

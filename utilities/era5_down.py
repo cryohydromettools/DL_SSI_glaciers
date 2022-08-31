@@ -12,6 +12,7 @@ def era5_down(files,lon, lat, elev):
     hgt_aws = elev
     df['t2m'] = df['t2m'].values + (hgt_aws - hgt_era) * -0.009
     df['d2m'] = df['d2m'].values + (hgt_aws - hgt_era) * -0.008
+
     # relative humidity
     T0 = 273.16 # K
     a1 = 611.21 # Pa
@@ -57,12 +58,12 @@ def era5_down(files,lon, lat, elev):
     df['u2'] = U10 * (np.log(2/(2.12*1000))/np.log(10/(2.12*1000)))
 
     # total precipitation
-    tp = df['tp'].values + (hgt_aws - hgt_era) * 0.000005
+    tp = df['tp'].values #+ (hgt_aws - hgt_era) * 0.000005
     tp[tp < 0]  = 0.0
     df['tp'] = tp
 
     # snowfall
-    snowfall = df['sf'].values + (hgt_aws - hgt_era) * 0.000005
+    snowfall = df['sf'].values #+ (hgt_aws - hgt_era) * 0.000005
     snowfall[snowfall < 0]  = 0.0
     df['sf'] = snowfall
     
