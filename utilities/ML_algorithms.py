@@ -10,6 +10,11 @@ from tensorflow.keras import optimizers
 from keras.layers import GaussianNoise
 
 
+from sklearn import ensemble
+from sklearn.inspection import permutation_importance
+from sklearn.neural_network import MLPRegressor
+
+
 
 def r2_keras(y_true, y_pred):
     SS_res =  K.sum(K.square(y_true - y_pred)) 
@@ -24,7 +29,44 @@ def r2_keras_loss(y_true, y_pred):
 def root_mean_squared_error(y_true, y_pred):
         return K.sqrt(K.mean(K.square(y_pred - y_true))) 
 
-    
+
+def create_RF_model():
+    params = {
+    "n_estimators": 300,
+    "max_depth": 6,
+    "min_samples_split": 5,
+    "criterion": "absolute_error",
+    'max_features': 10,
+    }
+    reg_ensemble = ensemble.RandomForestRegressor(**params)
+
+    return reg_ensemble
+
+def create_XGB_model():
+    params = {
+        "n_estimators": 300,
+        "max_depth": 6,
+        "min_samples_split": 5,
+        "learning_rate": 0.1,
+        "loss": 'huber', #"squared_error",
+        "validation_fraction": 0.2
+    }
+    reg_ensemble = ensemble.GradientBoostingRegressor(**params)
+
+    return reg_ensemble
+
+def create_ANN_model():
+    reg_nn = MLPRegressor(hidden_layer_sizes=(50,30,20,10),
+                          activation='relu',
+                          solver='lbfgs', 
+                          batch_size=100, 
+                          max_iter=200,
+                          learning_rate='adaptive', 
+                          shuffle=True, 
+                          validation_fraction=0.1)
+    return reg_nn
+
+
 def create_loso_model(n_features, final):
     model = Sequential()
     
