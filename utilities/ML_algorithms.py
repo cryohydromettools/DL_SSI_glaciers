@@ -8,6 +8,8 @@ from keras.layers import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 from tensorflow.keras import optimizers
 from keras.layers import GaussianNoise
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.ensemble import GradientBoostingRegressor
 
 
 from sklearn import ensemble
@@ -43,17 +45,18 @@ def create_RF_model():
     return reg_ensemble
 
 def create_XGB_model():
-    params = {
-        "n_estimators": 300,
-        "max_depth": 6,
-        "min_samples_split": 5,
-        "learning_rate": 0.1,
-        "loss": 'huber', #"squared_error",
-        "validation_fraction": 0.2
-    }
-    reg_ensemble = ensemble.GradientBoostingRegressor(**params)
+    param_grid = {'n_estimators': [300, 400, 500, 600],
+                  'max_features': [2, 3, 4],
+                  'max_depth': [6, 8, 10, 12], 
+                  'min_samples_leaf': [20, 25, 30],
+                   },
 
-    return reg_ensemble
+    forest_reg = GradientBoostingRegressor()
+    grid_search = RandomizedSearchCV(forest_reg, param_grid, cv=15, 
+                               scoring='neg_mean_squared_error',
+                               return_train_score=True, n_iter=10)
+
+    return grid_search
 
 def create_ANN_model():
     reg_nn = MLPRegressor(hidden_layer_sizes=(50,30,20,10),
