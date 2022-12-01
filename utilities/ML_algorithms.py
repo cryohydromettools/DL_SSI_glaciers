@@ -8,15 +8,14 @@ from keras.layers import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 from tensorflow.keras import optimizers
 from keras.layers import GaussianNoise
+from sklearn.linear_model import LassoCV
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 
 
 from sklearn import ensemble
 from sklearn.inspection import permutation_importance
 from sklearn.neural_network import MLPRegressor
-
-
 
 def r2_keras(y_true, y_pred):
     SS_res =  K.sum(K.square(y_true - y_pred)) 
@@ -32,43 +31,52 @@ def root_mean_squared_error(y_true, y_pred):
         return K.sqrt(K.mean(K.square(y_pred - y_true))) 
 
 
-def create_RF_model():
-    params = {
-    "n_estimators": 300,
-    "max_depth": 6,
-    "min_samples_split": 5,
-    "criterion": "absolute_error",
-    'max_features': 10,
-    }
-    reg_ensemble = ensemble.RandomForestRegressor(**params)
-
-    return reg_ensemble
-
-def create_XGB_model():
+def create_RF_model(custom_cv):
     param_grid = {'n_estimators': [300, 400, 500, 600],
-                  'max_features': [2, 3, 4],
-                  'max_depth': [6, 8, 10, 12], 
-                  'min_samples_leaf': [20, 25, 30],
+                  'max_features': [2, 3, 4, 8, 12],
+                  'max_depth': [4, 8,], 
+                  'min_samples_leaf': [5, 10, 20, 40],
+                   },
+
+    forest_reg = RandomForestRegressor()
+
+    grid_search = RandomizedSearchCV(forest_reg, param_grid, cv=custom_cv, 
+                               scoring='neg_mean_squared_error',
+                               return_train_score=True, n_iter=10)
+    return grid_search
+
+def create_XGB_model(custom_cv):
+
+    param_grid = {'n_estimators': [300, 400, 500, 600],
+                  'max_features': [2, 3, 4, 8, 12],
+                  'max_depth': [4, 8,], 
+                  'min_samples_leaf': [5, 10, 20, 40],
                    },
 
     forest_reg = GradientBoostingRegressor()
-    grid_search = RandomizedSearchCV(forest_reg, param_grid, cv=15, 
+
+    grid_search = RandomizedSearchCV(forest_reg, param_grid, cv=custom_cv, 
                                scoring='neg_mean_squared_error',
                                return_train_score=True, n_iter=10)
 
     return grid_search
 
-def create_ANN_model():
-    reg_nn = MLPRegressor(hidden_layer_sizes=(50,30,20,10),
-                          activation='relu',
-                          solver='lbfgs', 
-                          batch_size=100, 
-                          max_iter=200,
-                          learning_rate='adaptive', 
-                          shuffle=True, 
-                          validation_fraction=0.1)
-    return reg_nn
+def create_ANN_model(custom_cv):
 
+    param_list = {'hidden_layer_sizes' : [50,30,20,10],
+                  'max_iter' : [200, 250], 
+                  'activation': ['identity', 'logistic', 'tanh', 'relu'],
+                  'solver': ['lbfgs', 'sgd', 'adam'], 
+                  'batch_size': [50, 100, 150],
+                  'learning_rate':['constant', 'invscaling', 'adaptive'],
+                  'alpha': [0.00005,0.0005], 'shuffle':[True, False], 
+                  'validation_fraction':[0.1, 0.001]}
+
+    forest_reg = MLPRegressor()
+
+    MLP_gridCV = RandomizedSearchCV(estimator=forest_reg,  param_distributions=param_list, cv=custom_cv)  
+    
+    return MLP_gridCV
 
 def create_loso_model(n_features, final):
     model = Sequential()

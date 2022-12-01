@@ -38,9 +38,9 @@ def plot_prediction(y1, y2, N_total, n_toplot=10**10,):
     plt.gca().set_box_aspect(1)
     
     textstr = '\n'.join((
-    r'$RMSE=%.2f$' % (mean_squared_error(y_expected, y_predicted), ),
     r'$R^2=%.2f$' % (r2_score(y_expected, y_predicted), ),
-    r'$N total=%.0f$' % (N_total), ))
+    r'$RMSE=%.2f$' % (mean_squared_error(y_expected, y_predicted), ),
+    r'$N=%.0f$' % (N_total), ))
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     # place a text box in upper left in axes coords
     plt.text(0.05, 0.95, textstr, transform=plt.gca().transAxes, fontsize=14,
