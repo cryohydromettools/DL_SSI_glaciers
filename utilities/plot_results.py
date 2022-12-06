@@ -25,7 +25,7 @@ def plot_prediction(y1, y2, N_total, n_toplot=10**10,):
     plt.ylabel('Modeled SMB (m.w.e)', fontsize=16)
     plt.xlabel('Reference SMB (m.w.e)', fontsize=16)
     sc = plt.scatter(y_plt, ann_plt, c=z, s=20)
-    plt.clim(0,0.4)
+    plt.clim(0.0,8.0)
     plt.tick_params(labelsize=14)
     plt.colorbar(sc) 
     lineStart = -1.5
